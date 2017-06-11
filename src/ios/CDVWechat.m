@@ -19,7 +19,7 @@ static int const MAX_THUMBNAIL_SIZE = 320;
         self.wechatAppId = appId;
         [WXApi registerApp: appId];
     }
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(CDVWechatLoginNotification:) name:@"CDVWechatLoginNotification" object:nil];
     NSLog(@"cordova-plugin-wechat has been initialized. Wechat SDK Version: %@. APP_ID: %@.", [WXApi getApiVersion], appId);
 }
 
@@ -94,6 +94,7 @@ static int const MAX_THUMBNAIL_SIZE = 320;
 
 - (void)sendAuthRequest:(CDVInvokedUrlCommand *)command
 {
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(CDVWechatLoginNotification:) name:@"CDVWechatLoginNotification" object:nil];
     
     SendAuthReq* req =[[SendAuthReq alloc] init];
     
@@ -126,6 +127,8 @@ static int const MAX_THUMBNAIL_SIZE = 320;
 
 - (void)sendPaymentRequest:(CDVInvokedUrlCommand *)command
 {
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(CDVWechatLoginNotification:) name:@"CDVWechatLoginNotification" object:nil];
+    
     // check arguments
     NSDictionary *params = [command.arguments objectAtIndex:0];
     if (!params)
@@ -236,7 +239,13 @@ static int const MAX_THUMBNAIL_SIZE = 320;
     return ;
 }
 
-
+- (void)CDVWechatLoginNotification:(NSNotification*)notification {
+    NSDictionary *dict = notification.userInfo;
+    BaseResp *resp = dict[@"resp"];
+    
+    [self onResp:resp];
+    
+}
 
 #pragma mark "WXApiDelegate"
 
